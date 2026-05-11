@@ -1,0 +1,552 @@
+project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+modules/
+├── airspeed_selector/
+│   ├── airspeed_selector_main.cpp
+│   ├── airspeed_selector_params.c
+│   └── CMakeLists.txt
+├── attitude_estimator_q/
+│   ├── attitude_estimator_q_main.cpp
+│   ├── attitude_estimator_q_params.c
+│   └── CMakeLists.txt
+├── battery_status/
+│   ├── battery_status.cpp
+│   ├── CMakeLists.txt
+│   ├── parameters.cpp
+│   ├── parameters.h
+│   └── sensor_params_battery.c
+├── camera_feedback/
+│   ├── camera_feedback.cpp
+│   ├── camera_feedback.hpp
+│   └── CMakeLists.txt
+├── commander/
+│   ├── commander_tests/
+│   │   ├── CMakeLists.txt
+│   │   ├── commander_tests.cpp
+│   │   ├── state_machine_helper_test.cpp
+│   │   └── state_machine_helper_test.h
+│   ├── failure_detector/
+│   │   ├── CMakeLists.txt
+│   │   ├── failure_detector_params.c
+│   │   ├── FailureDetector.cpp
+│   │   └── FailureDetector.hpp
+│   ├── accelerometer_calibration.cpp
+│   ├── accelerometer_calibration.h
+│   ├── airspeed_calibration.cpp
+│   ├── airspeed_calibration.h
+│   ├── arm_auth.cpp
+│   ├── arm_auth.h
+│   ├── baro_calibration.cpp
+│   ├── baro_calibration.h
+│   ├── calibration_messages.h
+│   ├── calibration_routines.cpp
+│   ├── calibration_routines.h
+│   ├── CMakeLists.txt
+│   ├── Commander.cpp
+│   ├── Commander.hpp
+│   ├── commander_helper.cpp
+│   ├── commander_helper.h
+│   ├── commander_params.c
+│   ├── esc_calibration.cpp
+│   ├── esc_calibration.h
+│   ├── gyro_calibration.cpp
+│   ├── gyro_calibration.h
+│   ├── health_flag_helper.cpp
+│   ├── health_flag_helper.h
+│   ├── mag_calibration.cpp
+│   ├── mag_calibration.h
+│   ├── PreflightCheck.cpp
+│   ├── PreflightCheck.h
+│   ├── px4_custom_mode.h
+│   ├── rc_calibration.cpp
+│   ├── rc_calibration.h
+│   ├── rc_check.cpp
+│   ├── rc_check.h
+│   ├── state_machine_helper.cpp
+│   └── state_machine_helper.h
+├── dataman/
+│   ├── CMakeLists.txt
+│   ├── dataman.cpp
+│   └── dataman.h
+├── ekf2/
+│   ├── Utility/
+│   │   ├── CMakeLists.txt
+│   │   ├── InnovationLpf.hpp
+│   │   ├── PreFlightChecker.cpp
+│   │   ├── PreFlightChecker.hpp
+│   │   └── PreFlightCheckerTest.cpp
+│   ├── CMakeLists.txt
+│   ├── ekf2_main.cpp
+│   └── ekf2_params.c
+├── events/
+│   ├── temperature_calibration/
+│   │   ├── accel.cpp
+│   │   ├── accel.h
+│   │   ├── baro.cpp
+│   │   ├── baro.h
+│   │   ├── common.h
+│   │   ├── gyro.cpp
+│   │   ├── gyro.h
+│   │   ├── polyfit.hpp
+│   │   ├── task.cpp
+│   │   └── temperature_calibration.h
+│   ├── CMakeLists.txt
+│   ├── events_params.c
+│   ├── rc_loss_alarm.cpp
+│   ├── rc_loss_alarm.h
+│   ├── send_event.cpp
+│   ├── send_event.h
+│   ├── set_leds.cpp
+│   ├── status_display.cpp
+│   ├── status_display.h
+│   ├── subscriber_handler.cpp
+│   └── subscriber_handler.h
+├── fw_att_control/
+│   ├── CMakeLists.txt
+│   ├── FixedwingAttitudeControl.cpp
+│   ├── FixedwingAttitudeControl.hpp
+│   └── fw_att_control_params.c
+├── fw_pos_control_l1/
+│   ├── launchdetection/
+│   │   ├── CatapultLaunchMethod.cpp
+│   │   ├── CatapultLaunchMethod.h
+│   │   ├── CMakeLists.txt
+│   │   ├── launchdetection_params.c
+│   │   ├── LaunchDetector.cpp
+│   │   ├── LaunchDetector.h
+│   │   └── LaunchMethod.h
+│   ├── runway_takeoff/
+│   │   ├── CMakeLists.txt
+│   │   ├── runway_takeoff_params.c
+│   │   ├── RunwayTakeoff.cpp
+│   │   └── RunwayTakeoff.h
+│   ├── CMakeLists.txt
+│   ├── FixedwingPositionControl.cpp
+│   ├── FixedwingPositionControl.hpp
+│   └── fw_pos_control_l1_params.c
+├── land_detector/
+│   ├── CMakeLists.txt
+│   ├── FixedwingLandDetector.cpp
+│   ├── FixedwingLandDetector.h
+│   ├── land_detector_main.cpp
+│   ├── land_detector_params.c
+│   ├── land_detector_params_fw.c
+│   ├── land_detector_params_mc.c
+│   ├── LandDetector.cpp
+│   ├── LandDetector.h
+│   ├── MulticopterLandDetector.cpp
+│   ├── MulticopterLandDetector.h
+│   ├── RoverLandDetector.cpp
+│   ├── RoverLandDetector.h
+│   ├── VtolLandDetector.cpp
+│   └── VtolLandDetector.h
+├── landing_target_estimator/
+│   ├── CMakeLists.txt
+│   ├── KalmanFilter.cpp
+│   ├── KalmanFilter.h
+│   ├── landing_target_estimator_main.cpp
+│   ├── landing_target_estimator_params.c
+│   ├── LandingTargetEstimator.cpp
+│   └── LandingTargetEstimator.h
+├── load_mon/
+│   ├── CMakeLists.txt
+│   ├── load_mon.cpp
+│   └── params.c
+├── local_position_estimator/
+│   ├── sensors/
+│   │   ├── baro.cpp
+│   │   ├── Flow+Noise+Modelling.pdf
+│   │   ├── flow.cpp
+│   │   ├── gps.cpp
+│   │   ├── land.cpp
+│   │   ├── landing_target.cpp
+│   │   ├── lidar.cpp
+│   │   ├── mocap.cpp
+│   │   ├── sonar.cpp
+│   │   └── vision.cpp
+│   ├── BlockLocalPositionEstimator.cpp
+│   ├── BlockLocalPositionEstimator.hpp
+│   ├── CMakeLists.txt
+│   ├── fault_table.py
+│   ├── local_position_estimator_main.cpp
+│   └── params.c
+├── logger/
+│   ├── CMakeLists.txt
+│   ├── log_writer.cpp
+│   ├── log_writer.h
+│   ├── log_writer_file.cpp
+│   ├── log_writer_file.h
+│   ├── log_writer_mavlink.cpp
+│   ├── log_writer_mavlink.h
+│   ├── logger.cpp
+│   ├── logger.h
+│   ├── messages.h
+│   ├── params.c
+│   ├── util.cpp
+│   ├── util.h
+│   ├── watchdog.cpp
+│   └── watchdog.h
+├── mavlink/
+│   ├── mavlink_tests/
+│   │   ├── CMakeLists.txt
+│   │   ├── mavlink_ftp_test.cpp
+│   │   ├── mavlink_ftp_test.h
+│   │   ├── mavlink_ftp_test_data.py
+│   │   └── mavlink_tests.cpp
+│   ├── .gitignore
+│   ├── CMakeLists.txt
+│   ├── mavlink.c
+│   ├── mavlink_bridge_header.h
+│   ├── mavlink_command_sender.cpp
+│   ├── mavlink_command_sender.h
+│   ├── mavlink_ftp.cpp
+│   ├── mavlink_ftp.h
+│   ├── mavlink_high_latency2.cpp
+│   ├── mavlink_high_latency2.h
+│   ├── mavlink_log_handler.cpp
+│   ├── mavlink_log_handler.h
+│   ├── mavlink_main.cpp
+│   ├── mavlink_main.h
+│   ├── mavlink_messages.cpp
+│   ├── mavlink_messages.h
+│   ├── mavlink_mission.cpp
+│   ├── mavlink_mission.h
+│   ├── mavlink_orb_subscription.cpp
+│   ├── mavlink_orb_subscription.h
+│   ├── mavlink_parameters.cpp
+│   ├── mavlink_parameters.h
+│   ├── mavlink_params.c
+│   ├── mavlink_rate_limiter.cpp
+│   ├── mavlink_rate_limiter.h
+│   ├── mavlink_receiver.cpp
+│   ├── mavlink_receiver.h
+│   ├── mavlink_shell.cpp
+│   ├── mavlink_shell.h
+│   ├── mavlink_simple_analyzer.cpp
+│   ├── mavlink_simple_analyzer.h
+│   ├── mavlink_stream.cpp
+│   ├── mavlink_stream.h
+│   ├── mavlink_timesync.cpp
+│   ├── mavlink_timesync.h
+│   ├── mavlink_ulog.cpp
+│   ├── mavlink_ulog.h
+│   ├── module.yaml
+│   └── timestamped_list.h
+├── mc_att_control/
+│   ├── AttitudeControl/
+│   │   ├── AttitudeControl.cpp
+│   │   ├── AttitudeControl.hpp
+│   │   ├── AttitudeControlTest.cpp
+│   │   └── CMakeLists.txt
+│   ├── RateControl/
+│   │   ├── CMakeLists.txt
+│   │   ├── RateControl.cpp
+│   │   ├── RateControl.hpp
+│   │   └── RateControlTest.cpp
+│   ├── CMakeLists.txt
+│   ├── mc_att_control.hpp
+│   ├── mc_att_control_main.cpp
+│   └── mc_att_control_params.c
+├── mc_pos_control/
+│   ├── Takeoff/
+│   │   ├── CMakeLists.txt
+│   │   ├── Takeoff.cpp
+│   │   ├── Takeoff.hpp
+│   │   └── TakeoffTest.cpp
+│   ├── Utility/
+│   │   ├── ControlMath.cpp
+│   │   └── ControlMath.hpp
+│   ├── CMakeLists.txt
+│   ├── mc_pos_control_main.cpp
+│   ├── mc_pos_control_params.c
+│   ├── PositionControl.cpp
+│   └── PositionControl.hpp
+├── micrortps_bridge/
+│   ├── micro-CDR/
+│   │   ├── cmake/
+│   │   │   ├── common/
+│   │   │   │   ├── check_configuration.cmake
+│   │   │   │   ├── eprosima_libraries.cmake
+│   │   │   │   └── gtest.cmake
+│   │   │   └── packaging/
+│   │   │       └── Config.cmake.in
+│   │   ├── examples/
+│   │   │   └── basic.c
+│   │   ├── include/
+│   │   │   └── ucdr/
+│   │   │       ├── types/
+│   │   │       │   ├── array.h
+│   │   │       │   ├── basic.h
+│   │   │       │   ├── sequence.h
+│   │   │       │   └── string.h
+│   │   │       ├── common.h
+│   │   │       ├── config.h.in
+│   │   │       ├── dll.h
+│   │   │       └── microcdr.h
+│   │   ├── src/
+│   │   │   └── c/
+│   │   │       ├── types/
+│   │   │       │   ├── array.c
+│   │   │       │   ├── array_internals.h
+│   │   │       │   ├── basic.c
+│   │   │       │   ├── basic_internals.h
+│   │   │       │   ├── sequence.c
+│   │   │       │   ├── sequence_internals.h
+│   │   │       │   └── string.c
+│   │   │       ├── common.c
+│   │   │       └── common_internals.h
+│   │   ├── test/
+│   │   │   ├── endianness/
+│   │   │   │   ├── ArrayEndianness.cpp
+│   │   │   │   ├── BasicEndianness.cpp
+│   │   │   │   └── SequenceEndianness.cpp
+│   │   │   ├── serialization/
+│   │   │   │   ├── ArraySerialization.cpp
+│   │   │   │   ├── ArraySerialization.hpp
+│   │   │   │   ├── BasicSerialization.cpp
+│   │   │   │   ├── BasicSerialization.hpp
+│   │   │   │   ├── SequenceSerialization.cpp
+│   │   │   │   ├── SequenceSerialization.hpp
+│   │   │   │   ├── StringSerialization.cpp
+│   │   │   │   └── StringSerialization.hpp
+│   │   │   ├── Alignment.cpp
+│   │   │   ├── CMakeLists.txt
+│   │   │   ├── FullBuffer.cpp
+│   │   │   └── SequenceOverflow.cpp
+│   │   ├── .git
+│   │   ├── .gitignore
+│   │   ├── CMakeLists.txt
+│   │   ├── CTestJenkins.cmake
+│   │   ├── LICENSE
+│   │   ├── README.md
+│   │   └── valgrind.supp
+│   ├── micrortps_client/
+│   │   ├── CMakeLists.txt
+│   │   ├── microRTPS_client.h
+│   │   ├── microRTPS_client_dummy.cpp
+│   │   ├── microRTPS_client_main.cpp
+│   │   └── module.yaml
+│   ├── res/
+│   │   └── basic_example_flow.png
+│   ├── CMakeLists.txt
+│   └── README.md
+├── muorb/
+│   ├── adsp/
+│   │   ├── CMakeLists.txt
+│   │   ├── px4muorb.cpp
+│   │   ├── px4muorb.hpp
+│   │   ├── uORBFastRpcChannel.cpp
+│   │   └── uORBFastRpcChannel.hpp
+│   ├── krait/
+│   │   ├── CMakeLists.txt
+│   │   ├── muorb_main.cpp
+│   │   ├── px4muorb_KraitRpcWrapper.cpp
+│   │   ├── px4muorb_KraitRpcWrapper.hpp
+│   │   ├── uORBKraitFastRpcChannel.cpp
+│   │   └── uORBKraitFastRpcChannel.hpp
+│   └── test/
+│       ├── CMakeLists.txt
+│       ├── muorb_test_example.cpp
+│       ├── muorb_test_example.h
+│       ├── muorb_test_main.cpp
+│       └── muorb_test_start_posix.cpp
+├── navigator/
+│   ├── CMakeLists.txt
+│   ├── datalinkloss.cpp
+│   ├── datalinkloss.h
+│   ├── datalinkloss_params.c
+│   ├── enginefailure.cpp
+│   ├── enginefailure.h
+│   ├── follow_target.cpp
+│   ├── follow_target.h
+│   ├── follow_target_params.c
+│   ├── geofence.cpp
+│   ├── geofence.h
+│   ├── geofence_params.c
+│   ├── gpsfailure.cpp
+│   ├── gpsfailure.h
+│   ├── gpsfailure_params.c
+│   ├── land.cpp
+│   ├── land.h
+│   ├── loiter.cpp
+│   ├── loiter.h
+│   ├── mission.cpp
+│   ├── mission.h
+│   ├── mission_block.cpp
+│   ├── mission_block.h
+│   ├── mission_feasibility_checker.cpp
+│   ├── mission_feasibility_checker.h
+│   ├── mission_params.c
+│   ├── navigation.h
+│   ├── navigator.h
+│   ├── navigator_main.cpp
+│   ├── navigator_mode.cpp
+│   ├── navigator_mode.h
+│   ├── navigator_params.c
+│   ├── precland.cpp
+│   ├── precland.h
+│   ├── precland_params.c
+│   ├── rcloss.cpp
+│   ├── rcloss.h
+│   ├── rcloss_params.c
+│   ├── rtl.cpp
+│   ├── rtl.h
+│   ├── rtl_params.c
+│   ├── takeoff.cpp
+│   └── takeoff.h
+├── px4iofirmware/
+│   ├── adc.c
+│   ├── CMakeLists.txt
+│   ├── controls.c
+│   ├── hx_stream.c
+│   ├── hx_stream.h
+│   ├── i2c.c
+│   ├── mixer.cpp
+│   ├── mixer.h
+│   ├── protocol.h
+│   ├── px4io.c
+│   ├── px4io.h
+│   ├── registers.c
+│   ├── safety.c
+│   └── serial.c
+├── replay/
+│   ├── CMakeLists.txt
+│   ├── definitions.hpp
+│   ├── Replay.cpp
+│   ├── Replay.hpp
+│   ├── replay_main.cpp
+│   ├── ReplayEkf2.cpp
+│   └── ReplayEkf2.hpp
+├── rover_pos_control/
+│   ├── CMakeLists.txt
+│   ├── rover_pos_control_params.c
+│   ├── RoverPositionControl.cpp
+│   └── RoverPositionControl.hpp
+├── sensors/
+│   ├── vehicle_acceleration/
+│   │   ├── CMakeLists.txt
+│   │   ├── VehicleAcceleration.cpp
+│   │   └── VehicleAcceleration.hpp
+│   ├── vehicle_angular_velocity/
+│   │   ├── CMakeLists.txt
+│   │   ├── VehicleAngularVelocity.cpp
+│   │   └── VehicleAngularVelocity.hpp
+│   ├── CMakeLists.txt
+│   ├── common.h
+│   ├── motor_params.c
+│   ├── parameters.cpp
+│   ├── parameters.h
+│   ├── pwm_params_aux.c
+│   ├── pwm_params_main.c
+│   ├── rc_params.c
+│   ├── rc_update.cpp
+│   ├── rc_update.h
+│   ├── sensor_params.c
+│   ├── sensor_params_acc0.c
+│   ├── sensor_params_acc1.c
+│   ├── sensor_params_acc2.c
+│   ├── sensor_params_accel.c
+│   ├── sensor_params_battery.c
+│   ├── sensor_params_flow.c
+│   ├── sensor_params_gyro.c
+│   ├── sensor_params_gyro0.c
+│   ├── sensor_params_gyro1.c
+│   ├── sensor_params_gyro2.c
+│   ├── sensor_params_mag.c
+│   ├── sensor_params_mag0.c
+│   ├── sensor_params_mag1.c
+│   ├── sensor_params_mag2.c
+│   ├── sensor_params_mag3.c
+│   ├── sensors.cpp
+│   ├── temp_comp_params_accel.c
+│   ├── temp_comp_params_baro.c
+│   ├── temp_comp_params_gyro.c
+│   ├── temperature_compensation.cpp
+│   ├── temperature_compensation.h
+│   ├── voted_sensors_update.cpp
+│   └── voted_sensors_update.h
+├── sih/
+│   ├── CMakeLists.txt
+│   ├── sih.cpp
+│   ├── sih.hpp
+│   └── sih_params.c
+├── simulator/
+│   ├── gpssim/
+│   │   ├── CMakeLists.txt
+│   │   ├── gpssim.cpp
+│   │   ├── ubx_sim.cpp
+│   │   └── ubx_sim.h
+│   ├── ledsim/
+│   │   ├── CMakeLists.txt
+│   │   └── led.cpp
+│   ├── CMakeLists.txt
+│   ├── simulator.cpp
+│   ├── simulator.h
+│   ├── simulator_config.h.in
+│   ├── simulator_mavlink.cpp
+│   └── simulator_params.c
+├── uORB/
+│   ├── uORB_tests/
+│   │   ├── CMakeLists.txt
+│   │   ├── uORB_tests_main.cpp
+│   │   ├── uORBTest_UnitTest.cpp
+│   │   └── uORBTest_UnitTest.hpp
+│   ├── CMakeLists.txt
+│   ├── ORBSet.hpp
+│   ├── Publication.hpp
+│   ├── PublicationMulti.hpp
+│   ├── PublicationQueued.hpp
+│   ├── Subscription.cpp
+│   ├── Subscription.hpp
+│   ├── SubscriptionCallback.hpp
+│   ├── SubscriptionInterval.hpp
+│   ├── SubscriptionPollable.cpp
+│   ├── SubscriptionPollable.hpp
+│   ├── uORB.cpp
+│   ├── uORB.h
+│   ├── uORBCommon.hpp
+│   ├── uORBCommunicator.hpp
+│   ├── uORBDeviceMaster.cpp
+│   ├── uORBDeviceMaster.hpp
+│   ├── uORBDeviceNode.cpp
+│   ├── uORBDeviceNode.hpp
+│   ├── uORBMain.cpp
+│   ├── uORBManager.cpp
+│   ├── uORBManager.hpp
+│   ├── uORBTopics.h
+│   ├── uORBUtils.cpp
+│   └── uORBUtils.hpp
+├── vmount/
+│   ├── CMakeLists.txt
+│   ├── common.h
+│   ├── input.cpp
+│   ├── input.h
+│   ├── input_mavlink.cpp
+│   ├── input_mavlink.h
+│   ├── input_rc.cpp
+│   ├── input_rc.h
+│   ├── input_test.cpp
+│   ├── input_test.h
+│   ├── output.cpp
+│   ├── output.h
+│   ├── output_mavlink.cpp
+│   ├── output_mavlink.h
+│   ├── output_rc.cpp
+│   ├── output_rc.h
+│   ├── vmount.cpp
+│   └── vmount_params.c
+└── vtol_att_control/
+    ├── CMakeLists.txt
+    ├── standard.cpp
+    ├── standard.h
+    ├── standard_params.c
+    ├── tailsitter.cpp
+    ├── tailsitter.h
+    ├── tailsitter_params.c
+    ├── tiltrotor.cpp
+    ├── tiltrotor.h
+    ├── tiltrotor_params.c
+    ├── vtol_att_control_main.cpp
+    ├── vtol_att_control_main.h
+    ├── vtol_att_control_params.c
+    ├── vtol_type.cpp
+    └── vtol_type.h

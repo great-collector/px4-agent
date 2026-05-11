@@ -1,0 +1,52 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 虚拟环境
+venv/
+env/
+.venv/
+.env
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE / 编辑器配置
+.vscode/
+.idea/
+
+# 构建输出
+build/
+dist/
+*.egg-info/
+
+# 测试缓存
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook 缓存
+.ipynb_checkpoints/
+
+# 项目输出文件
+output/
+outputs/
+reports/
+
+# 大文件或数据集
+data/
+datasets/
+*.csv
+*.xlsx
+*.zip
+*.tar
+*.tar.gz

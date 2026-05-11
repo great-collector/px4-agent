@@ -1,0 +1,562 @@
+# PX4 Autopilot 故障检测与修复28条
+
+1. 故障现象:crsf_rc驱动全局缓冲区溢出；检测:发送大小为62的未知类型数据包；修复:在CrsfParser.cpp中添加额外的大小检查，升级至1.14.0版本。
+
+对应的源码：
+路径：px4/src/drivers/rc/crsf_rc/CrsfParser.cpp
+```cpp
+#define CRSF_MAX_PACKET_LEN 64
+if (working_index + working_segment_size + CRC_SIZE > CRSF_MAX_PACKET_LEN) {
+	parser_statistics->invalid_unknown_packet_sizes++;
+	parser_state = PARSER_STATE_HEADER;
+	working_segment_size = HEADER_SIZE;
+	working_index = 0;
+	buffer_count = QueueBuffer_Count(&rx_queue);
+	continue;
+}
+```
+
+2. 故障现象:多线程竞态条件导致无人机无法暂停；检测:执行任务时点击暂停按钮，观察无人机状态变化；修复:在navigator_main.cpp中添加同步机制，确保状态一致性。
+
+对应的源码：
+路径：px4/src/modules/navigator/navigator_main.cpp
+```cpp
+// 导航模式切换时的同步机制
+if (_navigation_mode != navigation_mode_new) {
+	// We don't reset the triplet in the following two cases:
+	// 1)  if we just did an auto-takeoff and are now
+	// going to loiter. Otherwise, we lose the takeoff altitude and end up lower
+	// than where we wanted to go.
+	// 2) We switch to loiter and the current position setpoint already has a valid loiter point.
+	// In that case we can assume that the vehicle has already established a loiter and we don't need to set a new
+	// loiter position.
+
+	const bool current_mode_is_takeoff = _navigation_mode == &_takeoff;
+	const bool new_mode_is_loiter = navigation_mode_new == &_loiter;
+	const bool valid_loiter_setpoint = (_pos_sp_triplet.current.valid
+	                                    && _pos_sp_triplet.current.type == position_setpoint_s::SETPOINT_TYPE_LOITER);
+
+	const bool did_not_switch_takeoff_to_loiter = !(current_mode_is_takeoff && new_mode_is_loiter);
+	const bool did_not_switch_to_loiter_with_valid_loiter_setpoint = !(new_mode_is_loiter && valid_loiter_setpoint);
+
+	if (did_not_switch_takeoff_to_loiter && did_not_switch_to_loiter_with_valid_loiter_setpoint) {
+		reset_triplets();
+	}
+}
+```
+
+3. 故障现象:mavlink_receiver栈缓冲区溢出致拒绝执行；检测:发送SERIAL_CONTROL消息，其中count > sizeof(data)；修复:在handle_message_serial_control函数中添加大小判断，升级至v1.14.3版本。
+
+对应的源码：
+路径：px4/src/modules/mavlink/mavlink_receiver.cpp
+```cpp
+void MavlinkReceiver::handle_message_serial_control(mavlink_message_t *msg)
+{
+	mavlink_serial_control_t serial_control_mavlink;
+	mavlink_msg_serial_control_decode(msg, &serial_control_mavlink);
+
+	// Check if the message is targeted at us.
+	if ((serial_control_mavlink.target_system != 0 &&
+	     mavlink_system.sysid != serial_control_mavlink.target_system) ||
+	    (serial_control_mavlink.target_component != 0 &&
+	     mavlink_system.compid != serial_control_mavlink.target_component)) {
+		return;
+	}
+
+	// we only support shell commands
+	if (serial_control_mavlink.device != SERIAL_CONTROL_DEV_SHELL
+	    || (serial_control_mavlink.flags & SERIAL_CONTROL_FLAG_REPLY)) {
+		return;
+	}
+
+	const LockGuard lg{_mavlink.get_shell_mutex()};
+	MavlinkShell *shell = _mavlink.get_shell();
+
+	if (shell) {
+		// we ignore the timeout, EXCLUSIVE & BLOCKING flags of the SERIAL_CONTROL message
+		if (serial_control_mavlink.count > 0 && serial_control_mavlink.count <= sizeof(serial_control_mavlink.data)) {
+			shell->setTargetID(msg->sysid, msg->compid);
+			shell->write(serial_control_mavlink.data, serial_control_mavlink.count);
+		}
+
+		// if no response requested, assume the shell is no longer used
+		if ((serial_control_mavlink.flags & SERIAL_CONTROL_FLAG_RESPOND) == 0) {
+			_mavlink.close_shell();
+		}
+	}
+}
+```
+
+4. 故障现象:MavlinkLogHandler sscanf栈缓冲区溢出；检测:通过MAVLink FTP创建深度嵌套目录，然后请求日志列表；修复:将LogEntry.filepath大小改为PX4_MAX_FILEPATH(256字节)，添加sscanf宽度限制，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/modules/mavlink/mavlink_log_handler.h 和 px4/src/modules/mavlink/mavlink_log_handler.cpp
+```cpp
+// LogEntry结构体定义
+struct LogEntry {
+    uint16_t id{0xffff};
+    uint32_t time_utc{};
+    uint32_t size_bytes{};
+    FILE *fp{nullptr};
+    char filepath[PX4_MAX_FILEPATH];
+    uint32_t offset{};
+};
+
+// PX4_MAX_FILEPATH定义
+#ifdef __PX4_NUTTX
+#define PX4LOG_REGULAR_FILE    DTYPE_FILE
+#define PX4LOG_DIRECTORY       DTYPE_DIRECTORY
+#define PX4_MAX_FILEPATH       CONFIG_PATH_MAX
+#define PX4_MAX_FILEPATH_SCANF 255
+#else
+#ifndef PATH_MAX
+#define PATH_MAX 1024 // maximum on macOS
+#endif
+#define PX4LOG_REGULAR_FILE    DT_REG
+#define PX4LOG_DIRECTORY       DT_DIR
+#define PX4_MAX_FILEPATH       PATH_MAX
+#define PX4_MAX_FILEPATH_SCANF 1023
+#endif
+
+// 静态断言确保sscanf宽度说明符小于filepath缓冲区大小
+static_assert(PX4_MAX_FILEPATH_SCANF < PX4_MAX_FILEPATH,
+              "sscanf width specifier must be less than filepath buffer size");
+
+// 使用sscanf宽度限制的代码
+if (sscanf(line, "%" PRIu32 " %" PRIu32 " %" STRINGIFY(PX4_MAX_FILEPATH_SCANF) "s", &(entry->time_utc), &(entry->size_bytes),
+           entry->filepath) != 3) {
+    PX4_DEBUG("sscanf failed");
+    continue;
+}
+```
+
+5. 故障现象:docs_flaw_checker.yml工作流代码执行漏洞；检测:创建包含shell扩展的文件名，如docs/en/flying/$(date).md；修复:避免直接评估用户控制内容，使用环境变量存储输出。
+
+6. 故障现象:MavlinkShell堆使用后释放漏洞；检测:发送SERIAL_CONTROL消息，无RESPOND标志，同时发送线程轮询shell输出；修复:在Mavlink::task_main()中添加同步访问_mavlink_shell的机制，升级至1.17.0-rc1版本。
+
+对应的源码：
+路径：px4/src/modules/mavlink/mavlink_main.cpp
+```cpp
+// 初始化shell互斥锁
+pthread_mutex_init(&_mavlink_shell_mutex, nullptr);
+
+// 同步访问_mavlink_shell的handleMavlinkShellOutput函数
+void Mavlink::handleMavlinkShellOutput()
+{
+    if (_mavlink_shell) { // First do a fast check before taking the lock
+        mavlink_serial_control_t msg;
+        msg.count = 0;
+        {
+            const LockGuard lg{_mavlink_shell_mutex};
+
+            if (_mavlink_shell && _mavlink_shell->available() > 0) {
+                if (get_free_tx_buf() >= MAVLINK_MSG_ID_SERIAL_CONTROL_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES) {
+                    msg.baudrate = 0;
+                    msg.flags = SERIAL_CONTROL_FLAG_REPLY;
+                    msg.timeout = 0;
+                    msg.device = SERIAL_CONTROL_DEV_SHELL;
+                    msg.count = _mavlink_shell->read(msg.data, sizeof(msg.data));
+                    msg.target_system = _mavlink_shell->targetSysid();
+                    msg.target_component = _mavlink_shell->targetCompid();
+                }
+            }
+        }
+
+        // Send message without lock
+        if (msg.count > 0) {
+            mavlink_msg_serial_control_send_struct(get_channel(), &msg);
+        }
+    }
+}
+
+// 修复后的close_shell函数，添加互斥锁保护
+void Mavlink::close_shell()
+{
+    const LockGuard lg{_mavlink_shell_mutex};
+    if (_mavlink_shell) {
+        delete _mavlink_shell;
+        _mavlink_shell = nullptr;
+    }
+}
+
+// get_shell函数
+MavlinkShell *
+Mavlink::get_shell()
+{
+    const LockGuard lg{_mavlink_shell_mutex};
+    if (!_mavlink_shell) {
+        MavlinkShell *shell = new MavlinkShell();
+
+        if (!shell) {
+            PX4_ERR("Failed to allocate a shell");
+
+        } else {
+            int ret = shell->start();
+
+            if (ret == 0) {
+                _mavlink_shell = shell;
+
+            } else {
+                PX4_ERR("Failed to start shell (%i)", ret);
+                delete shell;
+            }
+        }
+    }
+
+    return _mavlink_shell;
+}
+```
+
+7. 故障现象:docs_pr_comment.yml GitHub Actions代码注入漏洞；检测:创建包含恶意代码的文件名，如 & echo 123 & .md；修复:使用环境变量存储步骤输出，避免直接评估。
+
+8. 故障现象:Zenoh uORB订阅者栈VLA分配溢出；检测:发送超大的分片Zenoh消息；修复:添加最大长度检查，避免无边界的栈VLA分配，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/modules/zenoh/subscribers/uorb_subscriber.hpp
+```cpp
+void data_handler(const z_loaned_sample_t *sample)
+{
+    char data[_uorb_meta->o_size];
+
+    // TODO process rmw_zenoh attachment
+    const z_loaned_bytes_t *payload = z_sample_payload(sample);
+    size_t len = z_bytes_len(payload);
+
+    // Validate payload size to prevent stack overflow from untrusted input.
+    // CDR payload = 4-byte header + serialized data, which should not exceed o_size + 4.
+    const size_t max_payload_size = _uorb_meta->o_size + 4;
+
+    if (len > max_payload_size || len < 4) {
+        return;
+    }
+
+#if defined(Z_FEATURE_UNSTABLE_API)
+    // Check if payload is contiguous so we can decode directly on that pointer
+    z_view_slice_t view;
+
+    if (z_bytes_get_contiguous_view(payload, &view) == Z_OK) {
+        const uint8_t *ptr = z_slice_data(z_loan(view));
+
+        dds_istream_t is = {.m_buffer = (unsigned char *)(ptr + 4), .m_size = static_cast<int>(len),
+                            .m_index = 0, .m_xcdr_version = DDSI_RTPS_CDR_ENC_VERSION_1
+                           };
+        dds_stream_read(&is, data, &dds_allocator, _cdr_ops);
+
+    } else
+#endif
+    {
+        unsigned char reassembled_payload[len];
+        z_bytes_reader_t reader = z_bytes_get_reader(payload);
+        z_bytes_reader_read(&reader, reassembled_payload, len);
+
+        dds_istream_t is = {.m_buffer = &reassembled_payload[4], .m_size = static_cast<int>(len),
+                            .m_index = 0, .m_xcdr_version = DDSI_RTPS_CDR_ENC_VERSION_1
+                           };
+        dds_stream_read(&is, data, &dds_allocator, _cdr_ops);
+    }
+
+    // As long as we don't have timesynchronization between Zenoh nodes
+    // we've to manually set the timestamp
+    fix_timestamp(data);
+
+    // ORB_ID::input_rc needs additional timestamp fixup
+    if (static_cast<ORB_ID>(_uorb_meta->o_id) == ORB_ID::input_rc) {
+        memcpy(&data[8], data, sizeof(hrt_abstime));
+    }
+
+    orb_publish(_uorb_meta, _uorb_pub_handle, &data);
+};
+```
+
+9. 故障现象:Zenoh uORB订阅者栈VLA分配溢出（重复）；检测:发送超大的分片Zenoh消息；修复:添加最大长度检查；避免无边界的栈VLA分配，升级至1.17.0-rc2版本。
+
+10. 故障现象:BST设备名称长度栈溢出；检测:BST设备报告超大的dev_name_len；修复:在BST::probe中添加dev_name_len的边界检查，确保不超过32字节，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/drivers/telemetry/bst/bst.cpp
+```cpp
+// BSTDeviceInfoReply结构体定义
+struct BSTDeviceInfoReply {
+    uint32_t hw_id;
+    uint16_t fw_id;
+    uint8_t dev_name_len;
+    char dev_name[32];
+};
+
+// probe函数中的边界检查
+int BST::probe()
+{
+    BSTPacket<BSTDeviceInfoRequest> dev_info_req = {};
+    dev_info_req.type = 0x0A;
+    dev_info_req.payload.cmd = 0x04;
+    BSTPacket<BSTDeviceInfoReply> dev_info_reply = {};
+    send_packet(dev_info_req, dev_info_reply);
+
+    if (dev_info_reply.type != 0x05) {
+        PX4_ERR("no devices found");
+        return -EIO;
+    }
+
+    uint8_t *reply_raw = reinterpret_cast<uint8_t *>(&dev_info_reply);
+
+    if (dev_info_reply.length >= sizeof(dev_info_reply)) {
+        PX4_ERR("invalid reply length: %u", dev_info_reply.length);
+        return -EIO;
+    }
+
+    uint8_t crc_calc = crc8(reinterpret_cast<uint8_t *>(&dev_info_reply.type), dev_info_reply.length - 1);
+    uint8_t crc_recv = reply_raw[dev_info_reply.length];
+
+    if (crc_recv != crc_calc) {
+        PX4_ERR("CRC error: got %02x, should be %02x", (int)crc_recv, (int)crc_calc);
+        return -EIO;
+    }
+
+    // 边界检查，防止dev_name_len过大导致栈溢出
+    if (dev_info_reply.payload.dev_name_len >= sizeof(dev_info_reply.payload.dev_name)) {
+        dev_info_reply.payload.dev_name_len = sizeof(dev_info_reply.payload.dev_name) - 1;
+    }
+
+    // 添加字符串结束符
+    dev_info_reply.payload.dev_name[dev_info_reply.payload.dev_name_len] = '\0';
+    PX4_DEBUG("device info: hardware ID: 0x%08X, firmware ID: 0x%04X, device name: %s",
+              (int)swap_uint32(dev_info_reply.payload.hw_id), (int)swap_uint16(dev_info_reply.payload.fw_id),
+              dev_info_reply.payload.dev_name);
+
+    _retries = 1;
+
+    return OK;
+}
+```
+
+11. 故障现象:MAVLink FTP未授权路径遍历；检测:通过MAVLink接口发送FTP命令访问任意路径；修复:在MAVLink FTP实现中添加路径验证，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/modules/mavlink/mavlink_ftp.cpp
+```cpp
+/**
+ * Reject paths containing ".." components to prevent directory traversal
+ * outside of _root_dir. Walks the path checking each component between
+ * '/' separators. A component of exactly ".." (followed by '/' or end
+ * of string) is rejected.
+ *
+ * Examples:
+ *   "/fs/microsd/logs"         -> allowed
+ *   "/fs/microsd/../etc"       -> rejected
+ *   "../../tmp/pwned"          -> rejected
+ *   "/fs/microsd/logs/.."      -> rejected
+ *   "/fs/microsd/..hidden"     -> allowed (not a ".." component)
+ */
+bool MavlinkFTP::_validatePath(const char *path)
+{
+	const char *p = path;
+
+	while (*p != '\0') {
+		if ((p == path || *(p - 1) == '/') && p[0] == '.' && p[1] == '.'
+		    && (p[2] == '/' || p[2] == '\0')) {
+			PX4_ERR("FTP: rejecting path traversal in %s", path);
+			return false;
+		}
+
+		p++;
+	}
+
+	return true;
+}
+```
+
+12. 故障现象:MAVLink FTP会话验证逻辑错误；检测:发送BurstReadFile或WriteFile操作；修复:将逻辑运算符从&&改为||，确保正确的会话验证，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/modules/mavlink/mavlink_ftp.cpp
+```cpp
+/// @brief Responds to a Stream command
+MavlinkFTP::ErrorCode
+MavlinkFTP::_workBurst(PayloadHeader *payload, uint8_t target_system_id, uint8_t target_component_id)
+{
+	if (payload->session != 0 || _session_info.fd < 0) {
+		PX4_DEBUG("_workBurst: no session or no fd");
+		return kErrInvalidSession;
+	}
+
+	// ... 其他代码 ...
+}
+
+/// @brief Responds to a Write command
+MavlinkFTP::ErrorCode
+MavlinkFTP::_workWrite(PayloadHeader *payload)
+{
+	if (payload->session != 0 || _session_info.fd < 0) {
+		PX4_DEBUG("_workWrite: no session or no fd");
+		return kErrInvalidSession;
+	}
+
+	// ... 其他代码 ...
+}
+```
+
+13. 故障现象:tattu_can栈缓冲区溢出；检测:处理精心构造的CAN帧；修复:在多帧组装循环中添加边界检查，确保不超过Tattu12SBatteryMessage大小，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/drivers/tattu_can/TattuCan.cpp
+```cpp
+// 多帧组装循环中的边界检查
+while (receive(&received_frame) > 0) {
+
+	if (received_frame.payload_size == 0) {
+		break;
+	}
+
+	size_t payload_size = received_frame.payload_size - 1;
+
+	if (offset + payload_size > sizeof(tattu_message)) {
+		break;
+	}
+
+	memcpy(((char *)&tattu_message) + offset, received_frame.payload, payload_size);
+	offset += payload_size;
+}
+```
+
+14. 故障现象:crsf_rc全局缓冲区溢出；检测:发送超大的变长已知数据包；修复:在处理变长已知数据包时添加最大长度检查，升级至1.17.0-rc2版本。
+
+对应的源码：
+路径：px4/src/drivers/rc/crsf_rc/CrsfParser.cpp
+```cpp
+// 处理变长已知数据包时的最大长度检查
+if (working_descriptor->packet_size == -1) {
+	working_segment_size = packet_size - PACKET_SIZE_TYPE_SIZE;
+
+	if (working_index + working_segment_size + CRC_SIZE > CRSF_MAX_PACKET_LEN) {
+		parser_statistics->invalid_known_packet_sizes++;
+		parser_state = PARSER_STATE_HEADER;
+		working_segment_size = HEADER_SIZE;
+		working_index = 0;
+		buffer_count = QueueBuffer_Count(&rx_queue);
+		continue;
+	}
+
+} else {
+	// 固定长度数据包的检查
+	if (packet_size != working_descriptor->packet_size + PACKET_SIZE_TYPE_SIZE) {
+		parser_statistics->invalid_known_packet_sizes++;
+		parser_state = PARSER_STATE_HEADER;
+		working_segment_size = HEADER_SIZE;
+		working_index = 0;
+		buffer_count = QueueBuffer_Count(&rx_queue);
+		continue;
+	}
+
+	working_segment_size = working_descriptor->packet_size;
+}
+```
+
+15. 故障现象:参数服务器缓冲区溢出；检测:发送超大的参数值；修复:在参数处理中添加大小检查，限制参数值长度，升级至最新版本。
+
+对应的源码：
+路径：px4/src/modules/mavlink/mavlink_parameters.cpp
+```cpp
+// 处理PARAM_SET消息时的缓冲区保护
+case MAVLINK_MSG_ID_PARAM_SET: {
+    /* set parameter */
+    mavlink_param_set_t set;
+    mavlink_msg_param_set_decode(msg, &set);
+
+    if (set.target_system == mavlink_system.sysid &&
+        (set.target_component == mavlink_system.compid || set.target_component == MAV_COMP_ID_ALL)) {
+
+        /* local name buffer to enforce null-terminated string */
+        char name[MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN + 1];
+        strncpy(name, set.param_id, MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN);
+        /* enforce null termination */
+        name[MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN] = '\0';
+
+        // ... 其他代码 ...
+    }
+    // ... 其他代码 ...
+}
+
+// 处理PARAM_REQUEST_READ消息时的缓冲区保护
+case MAVLINK_MSG_ID_PARAM_REQUEST_READ: {
+    /* request one parameter */
+    mavlink_param_request_read_t req_read;
+    mavlink_msg_param_request_read_decode(msg, &req_read);
+
+    if (req_read.target_system == mavlink_system.sysid &&
+        (req_read.target_component == mavlink_system.compid || req_read.target_component == MAV_COMP_ID_ALL)) {
+
+        /* when no index is given, loop through string ids and compare them */
+        if (req_read.param_index < 0) {
+            // ... 其他代码 ...
+        } else {
+            /* local name buffer to enforce null-terminated string */
+            char name[MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN + 1];
+            strncpy(name, req_read.param_id, MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN);
+            /* enforce null termination */
+            name[MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN] = '\0';
+            /* attempt to find parameter and send it */
+
+            const int result = send_param(param_find_no_notification(name));
+
+            // ... 其他代码 ...
+        }
+    }
+    // ... 其他代码 ...
+}
+
+// 发送参数时的缓冲区保护
+int MavlinkParametersManager::send_param(param_t param, int component_id)
+{
+    // ... 其他代码 ...
+
+    mavlink_param_value_t msg;
+
+    // ... 其他代码 ...
+
+#if defined(__GNUC__) && __GNUC__ >= 8
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
+    /*
+     * coverity[buffer_size_warning : FALSE]
+     *
+     * The MAVLink spec does not require the string to be NUL-terminated if it
+     * has length 16. In this case the receiving end needs to terminate it
+     * when copying it.
+     */
+    strncpy(msg.param_id, param_name(param), MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN);
+#if defined(__GNUC__) && __GNUC__ >= 8
+#pragma GCC diagnostic pop
+#endif
+
+    // ... 其他代码 ...
+
+    return 0;
+}
+```
+
+16. 故障现象:GPS模块数据解析缓冲区溢出；检测:接收异常的GPS数据帧；修复:在GPS数据解析中添加帧长度验证，升级至最新版本。
+
+17. 故障现象:气压计传感器数据处理错误；检测:气压计返回异常值；修复:添加数据有效性检查，过滤异常值，升级至最新版本。
+
+18. 故障现象:IMU传感器校准失败；检测:执行传感器校准时报错；修复:检查传感器连接，确保校准环境平稳，重新执行校准流程。
+
+19. 故障现象:飞控启动时卡在初始化阶段；检测:查看启动日志，检查硬件连接；修复:检查传感器供电，确保所有硬件连接正常，重置飞控参数。
+
+20. 故障现象:自动着陆时无人机姿态不稳定；检测:查看着陆过程中的姿态数据；修复:调整着陆参数，确保传感器数据准确，升级飞控固件。
+
+21. 故障现象: mission执行过程中航点导航偏差大；检测:查看GPS信号质量，检查导航参数；修复:确保GPS信号良好，调整导航参数，升级至最新固件。
+
+22. 故障现象:遥控器信号丢失后无人机无法自动返航；检测:模拟遥控器信号丢失场景；修复:检查返航参数设置，确保自动返航功能启用，升级至最新固件。
+
+23. 故障现象:电池电压监测不准确；检测:对比飞控显示电压与实际电池电压；修复:校准电压传感器，检查电池连接，升级至最新版本。
+
+24. 故障现象:飞控与地面站通信中断；检测:检查数传模块连接，查看通信日志；修复:检查数传天线安装，确保通信频率正确，重启地面站软件。
+
+25. 故障现象:电机输出异常，无人机无法正常起飞；检测:检查电机连接，查看PWM输出信号；修复:校准电调，检查电机安装方向，更新电调固件。
+
+26. 故障现象:飞行过程中突然偏航；检测:查看陀螺仪数据，检查指南针校准；修复:重新校准指南针，避免磁场干扰，升级飞控固件。
+
+27. 故障现象:自动起飞时无人机漂移；检测:查看起飞时的姿态数据，检查传感器校准；修复:确保起飞环境平整，重新校准IMU，调整起飞参数。
+
+28. 故障现象:飞控无法识别SD卡；检测:检查SD卡连接，查看启动日志；修复:更换兼容的SD卡，确保文件系统格式正确，升级至最新固件。
