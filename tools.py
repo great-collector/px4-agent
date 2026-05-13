@@ -1,6 +1,16 @@
 #agent0的工具
 from pathlib import Path
+import os
 from langchain.tools import tool
+
+
+def resolve_project_root() -> Path:
+    env_root = os.getenv("PX4_MODULES_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+
+    return Path(__file__).resolve().parent.parent / "PX4-Autopilot" / "src" / "modules"
+
 
 def read_file_as_comment(
     file_path: str | Path,

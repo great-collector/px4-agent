@@ -24,7 +24,7 @@ logging.info("程序启动")
 
 #-------------------------------------------------------------------------
 print("初始化")
-project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+project_root = resolve_project_root()
 
 version=get_base_info(project_root)
 sum_of_modules=count_directories(project_root)
@@ -36,13 +36,30 @@ with open("src/base_imfo.txt", "w", encoding="utf-8") as f:
 tree=directory_tree(project_root)
 with open("src/module_tree.txt", "w", encoding="utf-8") as f:
     f.write(tree)
+
+# 记录项目信息到output文件夹
+from datetime import datetime
+OUTPUT_DIR = Path(__file__).parent.resolve() / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
+with open(OUTPUT_DIR / "project_info.txt", "w", encoding="utf-8") as f:
+    f.write(f"PX4 安全检测项目信息\n")
+    f.write(f"====================\n")
+    f.write(f"检测时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    f.write(f"PX4版本: {version}\n")
+    f.write(f"模块总数: {sum_of_modules}\n")
+    f.write(f"检测目录: {project_root}\n")
+    f.write(f"\n输出文件:\n")
+    f.write(f"- agent1_report.md: 基于漏洞知识库的供应链安全缺陷检测\n")
+    f.write(f"- agent2_report.md: 代码静态分析（Flawfinder + Semgrep）\n")
+    f.write(f"- agent3_report.md: 动态仿真检测结果\n")
+    f.write(f"- agent4_report.md: 综合漏洞检测报告\n")
     
 #-------------------------------------------------------------------------
 print("agent1执行")
 result1 = agent1.invoke({
                 "messages": [{"role": "user", "content": f"""
                             以你的知识,看看这个版本的px模块可能哪里出现漏洞,输出一份报告,报告格式为markdown,报告内容包括漏洞的文件路径,漏洞的描述,漏洞的严重程度
-                            输出报告路径:"output/report1.md"
+                            输出报告路径:"output/agent1_report.md"
                             """}]
             })
 logging.info(result1)
@@ -52,37 +69,37 @@ print("agent2执行")
 result2 = agent2.invoke({
             "messages": [{"role": "user", "content": f"""
                           以你的能力,看看这个版本的px模块可能哪里出现漏洞,输出一份报告,报告格式为markdown,报告内容包括漏洞的文件路径,漏洞的描述,漏洞的严重程度
-                          输出报告路径:"output/report2.md"
+                          输出报告路径:"output/agent2_report.md"
                           """}]
         })
 logging.info(result2)
 logging.info("agent2执行完成")
 #-------------------------------------------------------------------------
 print("agent3执行")
-agent1_report_path ="output/report1.md"
+agent1_report_path ="output/agent1_report.md"
 agent1_report = read_file_as_comment(agent1_report_path)
 
-agent2_report_path ="output/report2.md"
+agent2_report_path ="output/agent2_report.md"
 agent2_report = read_file_as_comment(agent2_report_path)
 
 result3 = agent3.invoke({
             "messages": [{"role": "user", "content": f"""
                         根据这两份报告:{agent1_report},{agent2_report},进行仿真测试,并撰写仿真测试结果
-                        输出报告路径:"output/report3.md"
+                        输出报告路径:"output/agent3_report.md"
                         """}]
         })
 logging.info(result3)
 logging.info("agent3执行完成")
 #-------------------------------------------------------------------------
 print("agent4执行")
-agent3_report_path ="output/report3.md"
+agent3_report_path ="output/agent3_report.md"
 agent3_report = read_file_as_comment(agent3_report_path)
 
 result4 = agent4.invoke({
             "messages": [{"role": "user", "content": f"""
                           根据这三份报告:{agent1_report},{agent2_report},{agent3_report},总结并生成完整的漏洞检测报告,
                           注意当前是2026年
-                          输出报告路径:"output/report4.md"
+                          输出报告路径:"output/agent4_report.md"
                           """}]
         })
 logging.info(result4)

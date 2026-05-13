@@ -1,5 +1,13 @@
 from langchain_core.tools import tool
 from pathlib import Path
+import os
+
+def resolve_project_root() -> Path:
+    env_root = os.getenv("PX4_MODULES_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    return Path(__file__).resolve().parent.parent.parent / "PX4-Autopilot" / "src" / "modules"
+
 
 @tool
 def read_file_as_comment(
@@ -121,7 +129,7 @@ from langchain.tools import tool
 
 
 @tool
-def write_text_file(file_path: str ="output/report1.md", content: str ="", encoding: str = "utf-8") -> str:
+def write_text_file(file_path: str ="output/agent1_report.md", content: str ="", encoding: str = "utf-8") -> str:
     """
     将指定内容写入到指定文件中。
 

@@ -21,7 +21,7 @@ logging.error("这里发生了错误")
 
 
 load_dotenv(override=True)
-project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+project_root = resolve_project_root()
 
 def create_agent2(llm):
    

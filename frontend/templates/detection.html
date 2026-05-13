@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>具身智能漏洞检测系统</title>
+    <link rel="stylesheet" href="/detection.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧检测系统 -->
+        <div class="left-panel">
+            <div class="detection-system">
+                <!-- 欢迎界面 -->
+                <div id="welcomeScreen" class="screen active">
+                    <div class="welcome-content">
+                        <h1 class="welcome-title">欢迎使用具身智能漏洞检测系统</h1>
+                        <p class="welcome-subtitle">请选择要检测的代码类别</p>
+                        
+                        <div class="options-container">
+                            <button class="option-btn uav-btn" data-type="uav">
+                                <span class="btn-icon">🚁</span>
+                                <span class="btn-text">无人机软件</span>
+                            </button>
+                            <button class="option-btn driving-btn" data-type="driving">
+                                <span class="btn-icon">🚗</span>
+                                <span class="btn-text">智能驾驶软件</span>
+                            </button>
+                            <button class="option-btn robot-btn" data-type="robot">
+                                <span class="btn-icon">🤖</span>
+                                <span class="btn-text">机器人软件</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 无人机检测表单 -->
+                <div id="uavFormScreen" class="screen">
+                    <div class="top-bar top-bar-form">
+                        <button class="back-btn top-back-btn" id="backBtn">← 返回</button>
+                        <h2>无人机软件检测</h2>
+                    </div>
+
+                    <form id="uavForm" class="detection-form">
+                        <!-- 国家选择 -->
+                        <div class="form-group">
+                            <label for="countrySelect">使用无人机的国家</label>
+                            <select id="countrySelect" required>
+                                <option value="">-- 请选择国家 --</option>
+                                <option value="china">中国</option>
+                                <option value="usa">美国</option>
+                                <option value="japan">日本</option>
+                                <option value="germany">德国</option>
+                                <option value="france">法国</option>
+                                <option value="uk">英国</option>
+                                <option value="canada">加拿大</option>
+                                <option value="australia">澳大利亚</option>
+                                <option value="singapore">新加坡</option>
+                                <option value="south-korea">韩国</option>
+                            </select>
+                        </div>
+
+                        <!-- 代码上传区域 -->
+                        <div class="form-group">
+                            <label for="fileUpload">无人机源代码上传处</label>
+                            
+                            <!-- 上传区域 -->
+                            <div id="uploadContainer">
+                                <div id="dropZone" class="drop-zone">
+                                    <div class="drop-zone-content">
+                                        <span class="upload-icon">📦</span>
+                                        <p class="upload-text">拖入 ZIP 文件到此处</p>
+                                        <p class="upload-subtext">或点击选择文件</p>
+                                    </div>
+                                    <input type="file" id="fileUpload" accept=".zip" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- 读取进度条 -->
+                            <div id="readingProgress" class="reading-progress" style="display: none;">
+                                <div class="reading-bar-wrapper">
+                                    <div class="reading-bar">
+                                        <div class="reading-fill" id="readingFill"></div>
+                                    </div>
+                                </div>
+                                <p class="reading-text">正在读取 ZIP 包...</p>
+                                <p id="readingPercentage" class="reading-percentage">0%</p>
+                            </div>
+                            
+                            <!-- 读取成功提示 -->
+                            <div id="readingSuccess" class="reading-success" style="display: none;">
+                                <div class="success-icon">✓</div>
+                                <p class="success-title">读取成功</p>
+                                <p class="success-filename" id="successFileName"></p>
+                                <button type="button" class="change-btn" id="changeFileBtn">更换文件</button>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <button type="submit" class="submit-btn" id="submitBtn">开始检测</button>
+                    </form>
+                </div>
+
+                <!-- 处理中界面 -->
+                <div id="processingScreen" class="screen">
+                    <div class="processing-content">
+                        <div class="top-bar top-bar-processing">
+                            <button class="back-btn top-back-btn" id="backBtn2">← 返回</button>
+                            <h2>正在处理文件</h2>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-info">
+                                <p class="progress-percentage" id="progressPercentage">0%</p>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="process-steps">
+                                <div class="step" id="step1">
+                                    <span class="step-icon">⏳</span>
+                                    <span class="step-text">解压缩 ZIP 包</span>
+                                </div>
+                                <div class="step" id="step2">
+                                    <span class="step-icon">⏳</span>
+                                    <span class="step-text">Agent 0 正在分析代码结构...</span>
+                                </div>
+                                <div class="step" id="step3">
+                                    <span class="step-icon">⏳</span>
+                                    <span class="step-text">执行安全检测</span>
+                                </div>
+                                
+                                <!-- Agent 工作流动画 -->
+                                <div id="agentWorkflow" class="agent-workflow" style="display: none;">
+                                    <div class="agent-item" id="agent1Work">
+                                        <span class="agent-icon">🤖</span>
+                                        <span class="agent-text">Agent 1 正在进行供应链分析...</span>
+                                    </div>
+                                    <div class="agent-item" id="agent2Work">
+                                        <span class="agent-icon">🤖</span>
+                                        <span class="agent-text">Agent 2 正在进行静态代码扫描...</span>
+                                    </div>
+                                    <div class="agent-item" id="agent3Work">
+                                        <span class="agent-icon">🤖</span>
+                                        <span class="agent-text">Agent 3 正在进行动态仿真验证...</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="step" id="step4">
+                                    <span class="step-icon">⏳</span>
+                                    <span class="step-text">生成检测报告</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧资讯栏 -->
+        <div class="right-panel">
+            <div class="news-section">
+                <h3>相关资讯</h3>
+                <p style="color: #999; text-align: center; margin-top: 50px;">敬请期待</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/detection.js"></script>
+</body>
+</html>

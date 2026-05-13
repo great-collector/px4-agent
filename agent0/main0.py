@@ -1,7 +1,7 @@
 from tools import *
 from pathlib import Path
 
-project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+project_root = resolve_project_root()
 
 version=get_base_info(project_root)
 sum_of_modules=count_directories(project_root)

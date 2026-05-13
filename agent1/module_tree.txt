@@ -1,4 +1,4 @@
-project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+project_root=<configured via PX4_MODULES_ROOT>
 modules/
 ├── airspeed_selector/
 │   ├── airspeed_selector_main.cpp

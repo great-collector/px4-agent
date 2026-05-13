@@ -8,6 +8,8 @@ venv/
 env/
 .venv/
 .env
+.env.*
+!.env.example
 
 # 日志文件
 *.log

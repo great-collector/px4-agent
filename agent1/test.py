@@ -64,7 +64,7 @@ def directory_tree(directory: str ="./", max_depth: int = 10, max_entries: int =
     return "\n".join(lines)
 
 
-project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+project_root = resolve_project_root()
 
 with open("tree.txt", "w", encoding="utf-8") as f:
     f.write(directory_tree(project_root))

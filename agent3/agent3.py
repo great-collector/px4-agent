@@ -1,11 +1,12 @@
 import os
+from pathlib import Path
 from langchain.agents import create_agent
 from dotenv import load_dotenv
 from tools import *
 from langchain_deepseek import ChatDeepSeek
 
 load_dotenv(override=True)
-project_root=r"E:\个人文件\比赛\26人智\PX4\PX4-Autopilot\src\modules"
+project_root = resolve_project_root()
 
 
 def create_agent3(llm):
@@ -18,6 +19,7 @@ def create_agent3(llm):
             "你是PX4安全检测系统的动态仿真检测模块的agent3,仿真检测工具detect_test\n"
             "你的职责是根据agent1和agent2的漏洞检测报告,仿真检测漏洞的真实性\n"
             "你可以使用write_text_file函数将结果写入文件中\n"
+            "所有输出路径应该在 output/ 文件夹下\n"
         ),
         name="agent3",
     )

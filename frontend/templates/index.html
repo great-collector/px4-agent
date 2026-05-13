@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无人机安全检测报告</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🛡️ 无人机安全检测报告</h1>
+                <p class="subtitle">综合安全威胁分析与仿真验证系统</p>
+            </div>
+        </header>
+
+        <!-- 按钮导航 -->
+        <nav class="nav-buttons">
+            <a href="/" class="nav-btn nav-link-btn">
+                <span class="btn-icon">➕</span>
+                新建检测<br><small>开始新检测</small>
+            </a>
+            <button class="nav-btn active" data-report="agent4">
+                <span class="btn-icon">📋</span>
+                综合报告<br><small>Agent4</small>
+            </button>
+            <button class="nav-btn" data-report="agent1">
+                <span class="btn-icon">🔍</span>
+                漏洞分析<br><small>Agent1</small>
+            </button>
+            <button class="nav-btn" data-report="agent2">
+                <span class="btn-icon">🔎</span>
+                代码扫描<br><small>Agent2</small>
+            </button>
+            <button class="nav-btn" data-report="agent3">
+                <span class="btn-icon">✅</span>
+                仿真验证<br><small>Agent3</small>
+            </button>
+        </nav>
+
+        <!-- 内容区域 -->
+        <main class="content">
+            <!-- 加载状态 -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>加载中...</p>
+            </div>
+
+            <!-- 错误提示 -->
+            <div id="error" class="error hidden"></div>
+
+            <!-- 报告头部信息 -->
+            <div id="report-header" class="report-header hidden">
+                <div class="header-info">
+                    <h2 id="report-title"></h2>
+                    <div class="meta">
+                        <span id="file-path"></span>
+                        <span id="file-size"></span>
+                        <span id="modified-time"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 报告内容 -->
+            <div id="report-content" class="report-content"></div>
+        </main>
+
+        <!-- 底部信息 -->
+        <footer class="footer">
+            <p>无人机安全检测系统 | 由 Agent1/2/3/4 联合生成 | <span id="timestamp"></span></p>
+        </footer>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
