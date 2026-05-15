@@ -12,9 +12,33 @@ const dropZone = document.getElementById('dropZone');
 const fileUpload = document.getElementById('fileUpload');
 const uavForm = document.getElementById('uavForm');
 const submitBtn = document.getElementById('submitBtn');
+const modeTitle = document.getElementById('modeTitle');
+const countryLabel = document.getElementById('countryLabel');
+const uploadLabel = document.getElementById('uploadLabel');
+const countrySelect = document.getElementById('countrySelect');
+const chinaLawModule = document.getElementById('chinaLawModule');
 
 let selectedFile = null;
 let selectedCountry = null;
+let currentMode = 'uav';
+
+const modeConfig = {
+    uav: {
+        title: '无人机软件检测',
+        countryLabel: '使用无人机的国家',
+        uploadLabel: '无人机源代码上传处'
+    },
+    driving: {
+        title: '智能驾驶软件检测',
+        countryLabel: '使用智能驾驶软件的国家',
+        uploadLabel: '智能驾驶源代码上传处'
+    },
+    robot: {
+        title: '机器人软件检测',
+        countryLabel: '使用机器人软件的国家',
+        uploadLabel: '机器人源代码上传处'
+    }
+};
 
 // ===== 屏幕切换函数 =====
 function showScreen(screenName) {
@@ -33,19 +57,37 @@ function showScreen(screenName) {
 
 // ===== 选项按钮事件 =====
 uavBtn.addEventListener('click', () => {
-    showScreen('uavForm');
+    openDetectionMode('uav');
 });
 
 drivingBtn.addEventListener('click', () => {
-    alert('智能驾驶软件检测功能开发中...');
+    openDetectionMode('driving');
 });
 
 robotBtn.addEventListener('click', () => {
-    alert('机器人软件检测功能开发中...');
+    openDetectionMode('robot');
 });
+
+function openDetectionMode(mode) {
+    currentMode = mode;
+    const config = modeConfig[mode] || modeConfig.uav;
+
+    modeTitle.textContent = config.title;
+    countryLabel.textContent = config.countryLabel;
+    uploadLabel.textContent = config.uploadLabel;
+
+    resetDetectionState();
+    updateChinaLawModule();
+    showScreen('uavForm');
+}
 
 // ===== 返回按钮 =====
 backBtn.addEventListener('click', () => {
+    resetDetectionState();
+    showScreen('welcome');
+});
+
+function resetDetectionState() {
     selectedFile = null;
     selectedCountry = null;
     
@@ -58,11 +100,34 @@ backBtn.addEventListener('click', () => {
     readingProgress.style.display = 'none';
     
     fileUpload.value = '';
-    document.getElementById('countrySelect').value = '';
+    countrySelect.value = '';
     submitBtn.disabled = false;
-    
-    showScreen('welcome');
-});
+    hideChinaLawModule();
+}
+
+function showChinaLawModule() {
+    if (chinaLawModule) {
+        chinaLawModule.style.display = 'block';
+    }
+}
+
+function hideChinaLawModule() {
+    if (chinaLawModule) {
+        chinaLawModule.style.display = 'none';
+    }
+}
+
+function updateChinaLawModule() {
+    if (!chinaLawModule) {
+        return;
+    }
+
+    if (currentMode === 'uav' && countrySelect.value === 'china') {
+        showChinaLawModule();
+    } else {
+        hideChinaLawModule();
+    }
+}
 
 // ===== 文件上传处理 =====
 // 点击上传区域时触发文件选择
@@ -73,6 +138,12 @@ dropZone.addEventListener('click', () => {
 // 文件选择改变
 fileUpload.addEventListener('change', (e) => {
     handleFileSelect(e.target.files);
+});
+
+// 国家选择变化时切换法律模块
+countrySelect.addEventListener('change', () => {
+    selectedCountry = countrySelect.value;
+    updateChinaLawModule();
 });
 
 // 拖拽事件处理

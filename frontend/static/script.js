@@ -78,8 +78,48 @@ function displayReport(data) {
     const contentDiv = document.getElementById('report-content');
     contentDiv.innerHTML = htmlContent;
     
+    // 代码高亮和功能绑定
+    highlightAndEnhanceCode();
+    
     // 滚动到顶部
     window.scrollTo(0, 0);
+}
+
+/**
+ * 代码高亮和增强功能（复制按钮等）
+ */
+function highlightAndEnhanceCode() {
+    // 对所有代码块进行高亮处理
+    document.querySelectorAll('pre code').forEach((codeBlock) => {
+        // 应用 Highlight.js 高亮
+        if (window.hljs) {
+            hljs.highlightElement(codeBlock);
+        }
+    });
+    
+    // 为复制按钮添加事件监听
+    document.querySelectorAll('.code-copy-btn').forEach((btn) => {
+        btn.addEventListener('click', function() {
+            const codeBlock = this.closest('.code-block').querySelector('code');
+            const code = codeBlock.textContent;
+            
+            // 复制到剪贴板
+            navigator.clipboard.writeText(code).then(() => {
+                // 显示复制成功反馈
+                const originalText = this.textContent;
+                this.textContent = 'Copied';
+                this.classList.add('copied');
+                
+                // 2秒后恢复原文本
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                alert('Copy failed. Please copy manually.');
+            });
+        });
+    });
 }
 
 /**
@@ -92,11 +132,30 @@ function markdownToHtml(markdown, data) {
     html = html.replace(/^---+$/gm, '');
     html = html.replace(/\n\n\n+/g, '\n\n');  // 清理多余空行
     
-    // 【第一步】在转义之前，提取所有 Agent Report 链接并用占位符替换
+    // 【第一步 - 关键】先提取代码块，用占位符替换，保护代码块内容不被转义破坏
+    const codeBlockMap = {};
+    let codeBlockIndex = 0;
+    
+    html = html.replace(/```([a-z0-9]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+        // 只删除首尾换行符，保留所有内部缩进
+        code = code.replace(/^\n+|\n+$/g, '');
+        const language = lang || 'plaintext';
+        
+        // 保存代码块到 map，用唯一占位符替换
+        const placeholder = 'CODEBLOCK' + codeBlockIndex;
+        codeBlockMap[placeholder] = {
+            lang: language,
+            code: code
+        };
+        codeBlockIndex++;
+        
+        return placeholder;
+    });
+    
+    // 【第二步】提取 Agent Report 链接并用占位符替换
     const agentLinkMap = {};
     let placeholderIndex = 0;
     
-    // 处理 agent1report.md, agent2_report.md 等各种格式
     html = html.replace(/agent([1-4])_?report\.md/gi, function(match) {
         const agentNum = match.match(/\d/)[0];
         const reportMap = {
@@ -113,7 +172,6 @@ function markdownToHtml(markdown, data) {
             '4': '综合报告'
         };
         
-        // 使用不含特殊字符的占位符，防止被破坏
         const placeholderId = 'AGENTLINK' + placeholderIndex;
         agentLinkMap[placeholderId] = {
             reportId: reportId,
@@ -125,7 +183,7 @@ function markdownToHtml(markdown, data) {
         return placeholderId;
     });
     
-    // 【第二步】转义 HTML 特殊字符
+    // 【第三步】现在转义 HTML 特殊字符（代码块已经被保护）
     html = html
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -143,11 +201,6 @@ function markdownToHtml(markdown, data) {
                    '<p>报告生成时间: ' + (data ? formatDateTime(data.modified_time) : '') + '</p></div>';
         }
         return match;
-    });
-    
-    // 代码块：``` ```
-    html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, function(match, lang, code) {
-        return '<pre><code>' + code.trim() + '</code></pre>';
     });
     
     // 内联代码：`code`
@@ -219,7 +272,33 @@ function markdownToHtml(markdown, data) {
     html = html.replace(/<p>(<ul>|<ol>|<table>|<pre>|<blockquote>|<div)/g, '$1');
     html = html.replace(/(<\/ul>|<\/ol>|<\/table>|<\/pre>|<\/blockquote>|<\/div>)<\/p>/g, '$1');
     
-    // 【第三步】将所有占位符替换为实际的链接 HTML
+    // 【第四步 - 关键】恢复所有代码块占位符为真实的代码块 HTML
+    for (const [placeholder, codeBlockData] of Object.entries(codeBlockMap)) {
+        const { lang, code } = codeBlockData;
+        
+        // HTML 转义处理代码内容
+        const escapedCode = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        
+        // 生成代码块 HTML
+        let codeBlockHtml = '<div class="code-block">';
+        codeBlockHtml += '<div class="code-header">';
+        codeBlockHtml += '<span class="code-lang">' + lang + '</span>';
+        codeBlockHtml += '<button class="code-copy-btn" title="Copy">Copy</button>';
+        codeBlockHtml += '</div>';
+        codeBlockHtml += '<pre><code class="language-' + lang + '" data-language="' + lang + '">' + escapedCode + '</code></pre>';
+        codeBlockHtml += '</div>';
+        
+        // 用正则表达式进行全局替换（确保替换所有占位符）
+        const regex = new RegExp(placeholder, 'g');
+        html = html.replace(regex, codeBlockHtml);
+    }
+    
+    // 【第五步】将所有占位符替换为实际的链接 HTML
     // 使用正则表达式全局替换（更可靠）
     for (const [placeholderId, linkInfo] of Object.entries(agentLinkMap)) {
         const linkHtml = '<a href="#" class="agent-report-link" data-report="' + linkInfo.reportId + '" title="点击跳转到' + linkInfo.reportName + '">' + linkInfo.originalText + '</a>';

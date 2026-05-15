@@ -38,13 +38,13 @@
                 <div id="uavFormScreen" class="screen">
                     <div class="top-bar top-bar-form">
                         <button class="back-btn top-back-btn" id="backBtn">← 返回</button>
-                        <h2>无人机软件检测</h2>
+                        <h2 id="modeTitle">无人机软件检测</h2>
                     </div>
 
                     <form id="uavForm" class="detection-form">
                         <!-- 国家选择 -->
                         <div class="form-group">
-                            <label for="countrySelect">使用无人机的国家</label>
+                            <label for="countrySelect" id="countryLabel">使用无人机的国家</label>
                             <select id="countrySelect" required>
                                 <option value="">-- 请选择国家 --</option>
                                 <option value="china">中国</option>
@@ -62,7 +62,7 @@
 
                         <!-- 代码上传区域 -->
                         <div class="form-group">
-                            <label for="fileUpload">无人机源代码上传处</label>
+                            <label for="fileUpload" id="uploadLabel">无人机源代码上传处</label>
                             
                             <!-- 上传区域 -->
                             <div id="uploadContainer">
@@ -98,6 +98,90 @@
 
                         <!-- 提交按钮 -->
                         <button type="submit" class="submit-btn" id="submitBtn">开始检测</button>
+
+                        <!-- 相关法律模块（仅中国显示） -->
+                        <div id="chinaLawModule" class="china-law-module" style="display: none;">
+                            <div class="law-module-header">
+                                <h3>相关法律</h3>
+                                <p>以下法规/标准适用于中国境内无人机使用场景，可点击跳转查看原文。</p>
+                            </div>
+
+                            <div class="law-list">
+                                <div class="law-item">
+                                    <a href="https://www.gov.cn/zhengce/content/202306/content_6888799.htm" target="_blank" rel="noopener noreferrer" class="law-title-link">《无人驾驶航空器飞行管理暂行条例》</a>
+                                    <p class="law-desc">条例规定了无人驾驶航空器的分类、登记、适航、空域、飞行活动申请、操控员要求、法律责任等内容。</p>
+                                </div>
+
+                                <div class="law-item">
+                                    <a href="https://xxgk.mot.gov.cn/2020/gz/202401/t20240103_3980656.html" target="_blank" rel="noopener noreferrer" class="law-title-link">《民用无人驾驶航空器运行安全管理规则》</a>
+                                    <p class="law-desc">民航系统对民用无人驾驶航空器运行安全进行管理的重要规章，重点关注飞行控制、状态判断、通信链路、避障、失控保护等风险。</p>
+                                </div>
+
+                                <div class="law-item">
+                                    <a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=495F3D69241E5961AFC4FA2939E383B4" target="_blank" rel="noopener noreferrer" class="law-title-link">GB42590-2023《民用无人驾驶航空器系统安全要求》</a>
+                                    <p class="law-desc">现行的强制性国家产品安全标准。</p>
+                                </div>
+
+                                <div class="law-item">
+                                    <a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=495F3D69241E5961AFC4FA2939E383B4" target="_blank" rel="noopener noreferrer" class="law-title-link">GB 46761-2025《民用无人驾驶航空器实名制登记管理规定》</a>
+                                    <p class="law-desc">无人机使用实名登记制度的专门规范。</p>
+                                </div>
+                            </div>
+
+                            <div class="restriction-section">
+                                <h4>相关限制</h4>
+
+                                <div class="restriction-list">
+                                    <div class="restriction-item">
+                                        <div class="restriction-title-row">
+                                            <span class="restriction-title">1. 最大飞行高度限制</span>
+                                            <a href="https://www.gov.cn/zhengce/content/202306/content_6888799.htm" target="_blank" rel="noopener noreferrer">查看依据</a>
+                                        </div>
+                                        <p class="restriction-desc">法规/标准背景：《无人驾驶航空器飞行管理暂行条例》将真高120米以上空域列为无人驾驶航空器管制空域之一。GB42590-2023也要求关键飞行参数限制与保护能力。</p>
+                                    </div>
+
+                                    <div class="restriction-item">
+                                        <div class="restriction-title-row">
+                                            <span class="restriction-title">2. 最大水平飞行速度限制</span>
+                                            <a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=495F3D69241E5961AFC4FA2939E383B4" target="_blank" rel="noopener noreferrer">查看依据</a>
+                                        </div>
+                                        <p class="restriction-desc">法规/标准背景：GB42590-2023要求轻型和小型无人驾驶航空器飞行控制系统具备关键飞行参数限制与保护能力，包括最大飞行高度限制和最大平飞速度限制。</p>
+                                    </div>
+
+                                    <div class="restriction-item">
+                                        <div class="restriction-title-row">
+                                            <span class="restriction-title">3. 电子围栏 / 地理围栏</span>
+                                            <a href="https://www.gov.cn/zhengce/content/202306/content_6888799.htm" target="_blank" rel="noopener noreferrer">查看依据</a>
+                                        </div>
+                                        <p class="restriction-desc">法规/标准背景：GB42590-2023涉及电子围栏、空域保持能力等安全要求；《暂行条例》也明确机场、军事禁区、重要基础设施、危险品区域、重要文物等区域上方空域应划设为管制空域。</p>
+                                    </div>
+
+                                    <div class="restriction-item">
+                                        <div class="restriction-title-row">
+                                            <span class="restriction-title">4. 返航高度和返航逻辑</span>
+                                            <a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=495F3D69241E5961AFC4FA2939E383B4" target="_blank" rel="noopener noreferrer">查看依据</a>
+                                        </div>
+                                        <p class="restriction-desc">法规/标准背景：GB42590-2023强调无人机系统应具备应急处置能力，常见措施包括悬停、返航、降落等。</p>
+                                    </div>
+
+                                    <div class="restriction-item">
+                                        <div class="restriction-title-row">
+                                            <span class="restriction-title">5. 失控保护 / failsafe 机制</span>
+                                            <a href="https://xxgk.mot.gov.cn/2020/gz/202401/t20240103_3980656.html" target="_blank" rel="noopener noreferrer">查看依据</a>
+                                        </div>
+                                        <p class="restriction-desc">法规/标准背景：GB42590-2023提出应急处置要求；无人机在突发状态下应具备悬停、返航、降落、开伞等一种或多种处置能力。</p>
+                                    </div>
+
+                                    <div class="restriction-item">
+                                        <div class="restriction-title-row">
+                                            <span class="restriction-title">6. 远程识别/运行识别</span>
+                                            <a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=495F3D69241E5961AFC4FA2939E383B4" target="_blank" rel="noopener noreferrer">查看依据</a>
+                                        </div>
+                                        <p class="restriction-desc">法规/标准背景：GB42590-2023涉及远程识别要求；《民用无人驾驶航空器系统运行识别规范》规定了民用无人驾驶航空器系统运行识别的信息内容、信息格式、发送、接收与处理要求。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
 

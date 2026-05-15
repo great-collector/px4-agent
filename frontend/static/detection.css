@@ -220,7 +220,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 40px;
-    max-width: 600px;
+    max-width: 1180px;
     margin: 0 auto;
     width: 100%;
     overflow-y: auto;
@@ -471,6 +471,126 @@ body {
     background-color: #d1d5db;
     cursor: not-allowed;
     transform: none;
+}
+
+/* 中国相关法律模块 */
+.china-law-module {
+    margin-top: 28px;
+    padding: 24px;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.06);
+    width: 100%;
+}
+
+.law-module-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.law-module-header p {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 18px;
+}
+
+.law-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.law-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5edf8;
+}
+
+.law-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.law-title-link {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.law-title-link:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+.law-desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.restriction-section {
+    margin-top: 24px;
+}
+
+.restriction-section h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 12px;
+}
+
+.restriction-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.restriction-item {
+    padding: 16px 18px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #e5edf8;
+}
+
+.restriction-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.restriction-title-row a {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.restriction-title-row a:hover {
+    text-decoration: underline;
+}
+
+.restriction-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.restriction-desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.75;
 }
 
 /* ===== 处理中界面 ===== */

@@ -275,32 +275,250 @@ html, body {
     color: var(--gray-600);
 }
 
+/* 内联代码样式 */
 .report-content code {
     background-color: var(--gray-100);
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    color: var(--danger-color);
+    font-family: 'Fira Code', 'Courier New', monospace;
+    color: inherit; /* 使用与正文一致的颜色，避免额外着色 */
     font-size: 0.95em;
 }
 
-.report-content pre {
-    background-color: var(--gray-900);
-    color: #00ff00;
-    padding: 15px;
+/* 代码块容器 */
+.code-block {
+    margin: 20px 0;
     border-radius: 8px;
-    overflow-x: auto;
-    margin: 15px 0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-    line-height: 1.5;
+    overflow: hidden;
+    border: 1px solid #3a3f47;
+    background-color: #1f2937;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
+/* 代码块头部 */
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #374151;
+    padding: 10px 16px;
+    border-bottom: 1px solid #3a3f47;
+    font-size: 0.85em;
+    color: #d1d5db;
+}
+
+/* 代码语言标签 */
+.code-lang {
+    font-weight: 600;
+    color: #60a5fa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+/* 复制按钮 - 统一右侧放置 */
+.code-copy-btn {
+    background: none;
+    border: 1px solid #4b5563;
+    color: #d1d5db;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 0.85em;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.code-copy-btn:hover {
+    background-color: #4b5563;
+    color: #60a5fa;
+    border-color: #60a5fa;
+}
+
+.code-copy-btn.copied {
+    color: #10b981;
+    border-color: #10b981;
+}
+
+/* 代码块本身 - 严格保留缩进 */
+.report-content pre {
+    background-color: transparent;
+    color: #e5e7eb;
+    padding: 16px;
+    margin: 0;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Source Code Pro', 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.6;
+    border-radius: 0;
+    white-space: pre;
+    word-break: break-word;
+    word-wrap: break-word;
+}
 .report-content pre code {
     background-color: transparent;
     color: inherit;
     padding: 0;
     border-radius: 0;
+    font-family: inherit;
+}
+
+/* 代码高亮主题优化 - Dracula 主题 */
+.report-content .hljs {
+    background-color: transparent;
+    padding: 0;
+    color: #f8f8f2;
+}
+
+/* 基础文本颜色 */
+.report-content .hljs-attr {
+    color: #8be9fd;
+}
+
+.report-content .hljs-symbol {
+    color: #8be9fd;
+}
+
+.report-content .hljs-bullet {
+    color: #f1fa8c;
+}
+
+.report-content .hljs-link {
+    color: #8be9fd;
+}
+
+/* 关键字高亮 */
+.report-content .hljs-keyword {
+    color: #ff79c6;
+}
+
+.report-content .hljs-selector-tag {
+    color: #ff79c6;
+}
+
+.report-content .hljs-literal {
+    color: #ff79c6;
+}
+
+/* 字符串高亮 */
+.report-content .hljs-string {
+    color: #f1fa8c;
+}
+
+.report-content .hljs-quote {
+    color: #f1fa8c;
+}
+
+/* 数字高亮 */
+.report-content .hljs-number {
+    color: #bd93f9;
+}
+
+/* 函数名高亮 */
+.report-content .hljs-function .hljs-title {
+    color: #8be9fd;
+}
+
+.report-content .hljs-title {
+    color: #8be9fd;
+}
+
+.report-content .hljs-title.class_ {
+    color: #8be9fd;
+}
+
+.report-content .hljs-title.class_.inherited__ {
+    color: #8be9fd;
+}
+
+/* 类名和类型 */
+.report-content .hljs-class {
+    color: #8be9fd;
+}
+
+.report-content .hljs-type {
+    color: #8be9fd;
+}
+
+/* 注释高亮 */
+.report-content .hljs-comment {
+    color: #6272a4;
+    font-style: italic;
+}
+
+/* 标点符号和运算符 - 关键！确保括号、花括号等可见 */
+.report-content .hljs-punctuation,
+.report-content .hljs .hljs-punctuation,
+.report-content .hljs-operator,
+.report-content .hljs .hljs-operator,
+.report-content .hljs-symbol,
+.report-content .hljs .hljs-symbol,
+.report-content .hljs-bullet,
+.report-content .hljs .hljs-bullet {
+    color: #f8f8f2 !important;
+}
+
+/* 确保斜杠和路径分隔符可见 */
+.report-content .hljs-subst,
+.report-content .hljs .hljs-subst,
+.report-content .hljs-link,
+.report-content .hljs .hljs-link {
+    color: #f8f8f2 !important;
+}
+
+/* 名称 */
+.report-content .hljs-name {
+    color: #f8f8f2;
+}
+
+.report-content .hljs-variable {
+    color: #f8f8f2;
+}
+
+.report-content .hljs-built_in {
+    color: #8be9fd;
+}
+
+/* 特殊标记 */
+.report-content .hljs-meta {
+    color: #6272a4;
+}
+
+.report-content .hljs-tag {
+    color: #ff79c6;
+}
+
+.report-content .hljs-regexp {
+    color: #f1fa8c;
+}
+
+.report-content .hljs-params {
+    color: #f8f8f2;
+}
+
+/* 默认颜色 - 仅针对高亮的代码块元素设置颜色，保留行内 code 继承正文颜色 */
+.report-content pre code,
+.report-content .hljs {
+    color: #f8f8f2;
+}
+
+/* 滚动条美化 */
+.report-content pre::-webkit-scrollbar {
+    height: 8px;
+}
+
+.report-content pre::-webkit-scrollbar-track {
+    background-color: #1f2937;
+}
+
+.report-content pre::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+    border-radius: 4px;
+}
+
+.report-content pre::-webkit-scrollbar-thumb:hover {
+    background-color: #6272a4;
 }
 
 .report-content table {
@@ -376,7 +594,6 @@ html, body {
 .report-meta-info p {
     margin: 5px 0;
     display: block;
-}
 }
 
 /* Agent Report 链接样式 */
