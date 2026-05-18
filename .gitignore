@@ -52,3 +52,4 @@ datasets/
 *.zip
 *.tar
 *.tar.gz
+frontend\news\news.md

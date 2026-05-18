@@ -247,8 +247,154 @@
         <!-- 右侧资讯栏 -->
         <div class="right-panel">
             <div class="news-section">
-                <h3>相关资讯</h3>
-                <p style="color: #999; text-align: center; margin-top: 50px;">敬请期待</p>
+                <div class="news-header">
+                    <p class="news-eyebrow">Security Brief</p>
+                    <h3>具身智能安全资讯</h3>
+                    <p class="news-intro">聚焦无人机、自动驾驶与机器人软件安全动态。</p>
+                </div>
+
+                <div class="news-groups">
+                    <details class="news-group" open>
+                        <summary>
+                            <span>无人机软件安全</span>
+                            <span class="news-count">6 条</span>
+                        </summary>
+
+                        <a class="news-card" href="https://github.com/PX4/PX4-Autopilot/security/advisories/GHSA-fh32-qxj9-x32f?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2026 · GitHub</span>
+                            <strong>PX4 Autopilot MAVLink FTP 未认证路径遍历漏洞</strong>
+                            <span>任意 MAVLink peer 可能读写文件，适合研究 PX4 软件安全。</span>
+                        </a>
+
+                        <a class="news-card" href="https://www.businesswire.com/news/home/20260407114884/en/CYVIATION-Discovers-Critical-Security-Flaw-in-Popular-UAV-and-Drone-Software-Preventing-Potential-Hacker-Takeovers?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2026 · 商业电报</span>
+                            <strong>PX4 Autopilot 高危漏洞 CVE-2026-1579</strong>
+                            <span>CVSS 9.8，可能导致无人机被恶意控制。</span>
+                        </a>
+
+                        <a class="news-card" href="https://app.opencve.io/cve/?product=px4_drone_autopilot&vendor=dronecode&utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2024-2026 · OpenCVE</span>
+                            <strong>PX4 Autopilot CVE 列表</strong>
+                            <span>覆盖缓冲区溢出、地理围栏绕过、拒绝服务等风险。</span>
+                        </a>
+
+                        <a class="news-card" href="https://nvd.nist.gov/vuln/detail/cve-2023-46256?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2023 · 国家漏洞数据库</span>
+                            <strong>PX4-Autopilot CVE-2023-46256</strong>
+                            <span>heap buffer overflow 可能导致无人机异常行为。</span>
+                        </a>
+
+                        <a class="news-card" href="https://www.wired.com/story/dji-droneid-operator-location-hacker-tool?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2023 · WIRED</span>
+                            <strong>DJI DroneID 可被解码，暴露操作者位置</strong>
+                            <span>涉及无人机通信协议与操作者隐私安全。</span>
+                        </a>
+
+                        <a class="news-card" href="https://www.tomshardware.com/networking/routers/fcc-reverses-course-allows-software-updates-for-foreign-made-drones-and-routers-until-2029-agency-says-blocking-security-patches-could-create-cybersecurity-risks?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2026 · Tom's Hardware</span>
+                            <strong>FCC 允许外国制造无人机继续接收安全/固件更新到 2029</strong>
+                            <span>体现供应链与固件维护对安全性的影响。</span>
+                        </a>
+                    </details>
+
+                    <details class="news-group">
+                        <summary>
+                            <span>自动驾驶 / 智能汽车</span>
+                            <span class="news-count">6 条</span>
+                        </summary>
+
+                        <a class="news-card" href="https://www.theverge.com/transportation/928480/waymo-recall-flooded-roads-robotaxi?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2026 · The Verge</span>
+                            <strong>Waymo 召回约 3,791 辆 Robotaxi</strong>
+                            <span>自动驾驶软件未能正确处理积水道路，涉及极端天气约束与 OTA 修复。</span>
+                        </a>
+
+                        <a class="news-card" href="https://vicone.com/blog/now-patched-kia-vulnerabilities-could-have-allowed-remote-control-using-only-a-license-plate-number?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2024 · VicOne</span>
+                            <strong>Kia 车辆远程控制 API 漏洞</strong>
+                            <span>攻击者仅凭车牌号可能远程解锁、启动、定位车辆。</span>
+                        </a>
+
+                        <a class="news-card" href="https://thehackernews.com/2024/09/hackers-could-have-remotely-controlled.html?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2024 · The Hacker News</span>
+                            <strong>Kia 漏洞新闻解读</strong>
+                            <span>说明车联网 API 漏洞如何影响真实车辆控制。</span>
+                        </a>
+
+                        <a class="news-card" href="https://upstream.auto/reports/global-automotive-cybersecurity-report-2025/?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · Upstream Security</span>
+                            <strong>2025 全球汽车网络安全报告</strong>
+                            <span>覆盖智能汽车、车联网、EV 基础设施与数字出行攻击趋势。</span>
+                        </a>
+
+                        <a class="news-card" href="https://vicone.com/blog/shifting-gears-for-2025-the-next-generation-of-automotive-cybersecurity-challenges?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · VicOne</span>
+                            <strong>2025 汽车网络安全报告</strong>
+                            <span>关注软件定义汽车、车载系统、供应链和威胁情报。</span>
+                        </a>
+
+                        <a class="news-card" href="https://www.nhtsa.gov/vehicle-safety/automated-vehicles-safety?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">长期更新 · NHTSA</span>
+                            <strong>自动驾驶系统安全页面</strong>
+                            <span>美国监管机构关于 Automated Driving Systems 的官方说明。</span>
+                        </a>
+                    </details>
+
+                    <details class="news-group">
+                        <summary>
+                            <span>机器人 / 机器狗安全</span>
+                            <span class="news-count">8 条</span>
+                        </summary>
+
+                        <a class="news-card" href="https://nvd.nist.gov/vuln/detail/CVE-2025-2894?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · 国家漏洞数据库</span>
+                            <strong>Unitree Go1 机器狗后门漏洞 CVE-2025-2894</strong>
+                            <span>持有 API key 者可能通过 CloudSail 远程控制设备。</span>
+                        </a>
+
+                        <a class="news-card" href="https://www.securityweek.com/undocumented-remote-access-backdoor-found-in-unitree-go1-robot-dog/?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · SecurityWeek</span>
+                            <strong>Unitree Go1 远程访问后门报道</strong>
+                            <span>攻击者可能控制远程隧道并访问摄像头。</span>
+                        </a>
+
+                        <a class="news-card" href="https://nvd.nist.gov/vuln/detail/CVE-2025-35027?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · 国家漏洞数据库</span>
+                            <strong>Unitree 多型号 BLE/Wi-Fi 配置接口漏洞</strong>
+                            <span>BLE 配网流程中的命令注入可能导致 root 权限执行。</span>
+                        </a>
+
+                        <a class="news-card" href="https://github.com/Bin4ry/UniPwn?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · GitHub</span>
+                            <strong>UniPwn：Unitree 机器人接管漏洞</strong>
+                            <span>涉及 BLE、硬编码密钥、认证缺陷与命令注入。</span>
+                        </a>
+
+                        <a class="news-card" href="https://spectrum.ieee.org/unitree-robot-exploit?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2025 · IEEE Spectrum</span>
+                            <strong>Unitree 机器人群体接管风险</strong>
+                            <span>报道 UniPwn 对商用四足/人形机器人的影响。</span>
+                        </a>
+
+                        <a class="news-card" href="https://nvd.nist.gov/vuln/detail/CVE-2024-30962?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2024 · 国家漏洞数据库</span>
+                            <strong>ROS 2 Navigation2 漏洞 CVE-2024-30962</strong>
+                            <span>nav2_amcl 存在缓冲区溢出，可本地执行任意代码。</span>
+                        </a>
+
+                        <a class="news-card" href="https://nvd.nist.gov/vuln/detail/CVE-2024-30961?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">2024 · 国家漏洞数据库</span>
+                            <strong>ROS 2 Navigation2 漏洞 CVE-2024-30961</strong>
+                            <span>不安全权限问题可能通过 nav2_bt_navigator 执行任意代码。</span>
+                        </a>
+
+                        <a class="news-card" href="https://github.com/aliasrobotics/RVD?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">
+                            <span class="news-meta">长期项目 · GitHub</span>
+                            <strong>Robot Vulnerability Database, RVD</strong>
+                            <span>机器人、ROS、中间件和工业机器人漏洞数据库。</span>
+                        </a>
+                    </details>
+                </div>
             </div>
         </div>
     </div>
